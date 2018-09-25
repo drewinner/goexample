@@ -1,5 +1,9 @@
 package main
-
+/**
+	flag package定义两种类型的函数
+	1,简单方法，比如int，返回赋值变量的指针
+	2，xxVar 传地址
+ */
 import (
 	"flag"
 	"fmt"
