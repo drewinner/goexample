@@ -11,5 +11,7 @@ func main() {
 		lib.Client()
 	} else if args[1] == "s" {
 		lib.Server()
+	} else if args[1] == "push" {
+		lib.PushMsg()
 	}
 }
