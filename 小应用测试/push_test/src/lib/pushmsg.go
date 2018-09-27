@@ -2,12 +2,11 @@ package lib
 
 import (
 	"fmt"
+	"github.com/gomodule/redigo/redis"
 	"log"
 )
 
-var (
-	ch chan int
-)
+var ch chan int = make(chan int)
 /**
 	发送消息，暂时用mysql-->后期改为kafka
 	@author:wanghongli
@@ -46,7 +45,7 @@ func handlePush(colum ...string) {
 
 	//根据userid获取对应的tcp conn
 	c := ConnRedis()
-	val, err := c.Do("get", colum[3])
+	val, err := redis.String(c.Do("get", colum[3]))
 	if err != nil {
 		//将来记录到其它存储中
 		log.Println("redis get key err = ", err)

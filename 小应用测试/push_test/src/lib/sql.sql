@@ -1,4 +1,4 @@
-pre_msg, CREATE TABLE `pre_msg` (
+CREATE TABLE `pre_msg` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `msg` varchar(300) NOT NULL DEFAULT '' COMMENT '推送的消息内容\n',
   `ispush` tinyint(1) NOT NULL DEFAULT '0' COMMENT '0未推送 1已推送',
