@@ -3,16 +3,20 @@ package lib
 import (
 	"encoding/json"
 	"log"
-	"net"
 	"strings"
 )
 
-//json code and json decode
-
-type Message struct {
-	Msg_conn *net.Conn                   //连接地址
-	Msg_type string `msg_type:"string"` //消息类型 cmd特殊为指令类型消息
-	Msg_body string `msg_body:"string"` //消息体,如果是cmd，内容为token
+/**
+	用户和连接map对应关系
+	@author:wanghongli
+	@since:2018/09/28
+*/
+type UCMap struct {
+	ClusterName string `clusterName:"string"` //集群名称
+	NodeName    string `nodeName:"string"`    //node节点名称
+	ConnKey     string `connKey:"string"`     //连接key--token
+	MsgType     string `msgType:"string"`     //消息类型cmd为指令消息,text为文本消息
+	MsgBody     string  `MsgBody:"string"`     //消息
 }
 
 /**
@@ -20,9 +24,9 @@ type Message struct {
 	@author:wanghongli
 	@since:2018/09/27
  */
-func Jsondecode(jsonMsg string) (message Message, err error) {
+func Jsondecode(jsonMsg string) (message UCMap, err error) {
 	jsonDec := json.NewDecoder(strings.NewReader(jsonMsg))
-	var m Message
+	var m UCMap
 	err = jsonDec.Decode(&m)
 	if err != nil {
 		log.Println("msg is not json", jsonMsg)
@@ -37,7 +41,7 @@ func Jsondecode(jsonMsg string) (message Message, err error) {
 	@author:wanghongli
 	@since:2018/09/27
 */
-func Jsonencode(m Message) (jsonMsg string, err error) {
+func Jsonencode(m UCMap) (jsonMsg string, err error) {
 
 	j, err := json.Marshal(m)
 	if err != nil {

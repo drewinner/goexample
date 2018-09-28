@@ -6,6 +6,10 @@ import (
 	"strings"
 )
 
+//map用来存放用户和连接的对应关系--注意限流，map最大个数限制流量
+var MsgMap map[string]net.Conn = make(map[string]net.Conn)
+
+
 func goHandler(conn net.Conn) {
 	defer conn.Close()
 
@@ -22,16 +26,20 @@ func goHandler(conn net.Conn) {
 			return
 		}
 		//将消息转化为Message对象
-		m,err := Jsondecode(string(buf[:n]))
+		m, err := Jsondecode(string(buf[:n]))
 		if err != nil {
-			fmt.Println("json error = ",err)
+			fmt.Println("json error = ", err)
 		}
 
-		if m.Msg_type == "cmd" {
+		if m.MsgType == "cmd" && m.MsgBody == "1" {
 			fmt.Println("insert into redis")
-			m.Msg_conn = &conn
-			onLineUser(m)
+			onLineUser(m,string(buf[:n]))
+			//保存map 用户token和用户conn映射关系
+			MsgMap[string(m.ConnKey)] = conn
+
+			fmt.Println(MsgMap)
 		}
+
 		//把数据转换为大写，再给用户发送
 		conn.Write([]byte(strings.ToUpper(string(buf[:n]))))
 	}

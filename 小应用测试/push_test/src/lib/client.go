@@ -15,10 +15,8 @@ func Client() {
 	}
 	defer conn.Close()
 	//连接服务器成功之后，将自己的token发送给服务器端
-	token := `
-	{"Msg_type":"cmd","Msg_body":"user1"}
-`
-	byteToken := []byte(token)
+	msg := `{"ClusterName":"push_cluster","NodeName":"node1","ConnKey":"user1","MsgType":"cmd","MsgBody":"1"}`
+	byteToken := []byte(msg)
 	conn.Write(byteToken)
 	//接收用户输入，发送到服务器
 	go func() {

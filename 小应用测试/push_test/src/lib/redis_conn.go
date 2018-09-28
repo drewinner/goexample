@@ -28,10 +28,8 @@ func ConnRedis() (conn redis.Conn) {
 	@author:wanghongli
 	@since:2018/09/27
 */
-func onLineUser(m Message) bool {
-	//将连接转化为数字，存入redis
-	i := p2s(m.Msg_conn)
+func onLineUser(m UCMap,normalMsg string) bool {
 	c := ConnRedis()
-	c.Do("set",m.Msg_body,i)
+	c.Do("set",m.ConnKey,normalMsg)
 	return true
 }
