@@ -22,7 +22,7 @@ func goHandler(conn net.Conn) {
 		//读取用户数据
 		n, err := conn.Read(buf)
 		if err != nil {
-			fmt.Println("err = ", err)
+			fmt.Println("err111111= ", err)
 			return
 		}
 		//将消息转化为Message对象

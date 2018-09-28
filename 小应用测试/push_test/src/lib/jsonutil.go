@@ -19,6 +19,14 @@ type UCMap struct {
 	MsgBody     string  `MsgBody:"string"`     //消息
 }
 
+type PushMsgStru struct {
+	 Id string `id:"string"`
+	 Msg string `id:"string"`
+	 IsPush string `id:"string"`
+	 UserId string `userId:"string"`
+	 CreateTime string `createTime:"string"`
+
+}
 /**
 	将接收到的消息转化为结构体类型
 	@author:wanghongli
@@ -38,12 +46,13 @@ func Jsondecode(jsonMsg string) (message UCMap, err error) {
 
 /**
 	将结构体转化为json，此方法有问题--没有调用
+	@todo:有问题，想办法实现接口形式调用 2018/09/28
 	@author:wanghongli
 	@since:2018/09/27
 */
-func Jsonencode(m UCMap) (jsonMsg string, err error) {
+func Jsonencode(i interface{}) (jsonMsg string, err error) {
 
-	j, err := json.Marshal(m)
+	j, err := json.Marshal(i)
 	if err != nil {
 		log.Println("struct change to json err = ", err)
 		return "", err

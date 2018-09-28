@@ -12,8 +12,8 @@ import (
 	@since:2018/09/27
  */
 func ConnRedis() (conn redis.Conn) {
-	//os.Setenv("REDIS_URL", "redis://192.168.0.222:6379")
-	os.Setenv("REDIS_URL", "redis://10.115.88.111:6379")
+	os.Setenv("REDIS_URL", "redis://192.168.0.222:6379")
+	//os.Setenv("REDIS_URL", "redis://10.115.88.111:6379")
 
 	c, err := redis.DialURL(os.Getenv("REDIS_URL"))
 	if err != nil {
