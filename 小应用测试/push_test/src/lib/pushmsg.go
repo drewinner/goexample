@@ -30,7 +30,7 @@ func PushMsg() {
 	//查询即将发送的消息
 	defer db.Close()
 
-	rows, err := db.Query("select * from pre_msg where ispush=0 order by id desc")
+	rows, err := db.Query("select * from pre_msg where ispush=0 order by id desc limit 10")
 	if err != nil {
 		panic(err.Error())
 	}
