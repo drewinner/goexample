@@ -3,9 +3,14 @@ package lib
 import (
 	"fmt"
 	"github.com/gomodule/redigo/redis"
-	"net"
+	"github.com/mikemintang/go-curl"
 )
 
+/**
+	测试过程发现tcp长连接比较耗资源，改为http请求
+	@author:wanghongli
+	@since:2018/09/29
+ */
 var ch chan int = make(chan int)
 var CluNodeMap map[string]string = make(map[string]string)
 
@@ -25,7 +30,7 @@ func PushMsg() {
 	//查询即将发送的消息
 	defer db.Close()
 
-	rows, err := db.Query("select * from pre_msg where ispush=0 order by id desc limit 10")
+	rows, err := db.Query("select * from pre_msg where ispush=0 order by id desc")
 	if err != nil {
 		panic(err.Error())
 	}
@@ -36,7 +41,7 @@ func PushMsg() {
 		if err != nil {
 			panic("read mysql error = " + err.Error())
 		}
-		fmt.Println(string(id), string(msg), string(ispush), string(userid), string(create_time))
+		//fmt.Println(string(id), string(msg), string(ispush), string(userid), string(create_time))
 		go handlePush(string(id), string(msg), string(ispush), string(userid), string(create_time))
 		<-ch
 	}
@@ -66,28 +71,31 @@ func handlePush(colum ...string) {
 	//clusterName := jsonVal.ClusterName //暂时不用
 	nodeName := jsonVal.NodeName
 	//根据nodeName获取对应的ip和端口号
-	if nodeNameV, ok := CluNodeMap[nodeName]; ok == true {
+	if _, ok := CluNodeMap[nodeName]; ok == true {
 
-		connn, err := net.Dial("tcp", nodeNameV)
-		if err != nil {
-			panic("pushmsg error " + err.Error())
-		}
 		//组装结构体
 		pushMsg := PushMsgStru{colum[0], colum[1], colum[2], colum[3], colum[4]}
-		//转换成json
-		jsonPushMsg, err := Jsonencode(pushMsg)
-		fmt.Println(jsonPushMsg)
-		n,err :=connn.Write([]byte(jsonPushMsg))
+		//转换成map
+		postData := Struct2Map(pushMsg)
+		//请求webservice 通过webservice发送消息
+		httpReq := curl.NewRequest()
+		//将json转换为map
+		httpRep, err := httpReq.SetUrl("http://127.0.0.1:8080").SetPostData(postData).Post()
 		if err != nil {
-			fmt.Println("push error !")
+			panic("curl error := " + err.Error())
+		} else {
+			if httpRep.IsOk() {
+				fmt.Println("http url right := ", httpRep.Body)
+			} else {
+				fmt.Println("http url err :=", httpRep.Raw)
+			}
 		}
-		fmt.Println(n)
-		//defer connn.Close()
 	} else {
 		panic("search node err and the nodeName is " + nodeName)
 	}
 
 	defer c.Close()
+
 	ch <- 0
 
 }

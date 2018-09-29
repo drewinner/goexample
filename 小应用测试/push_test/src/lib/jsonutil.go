@@ -3,6 +3,7 @@ package lib
 import (
 	"encoding/json"
 	"log"
+	"reflect"
 	"strings"
 )
 
@@ -16,17 +17,17 @@ type UCMap struct {
 	NodeName    string `nodeName:"string"`    //node节点名称
 	ConnKey     string `connKey:"string"`     //连接key--token
 	MsgType     string `msgType:"string"`     //消息类型cmd为指令消息,text为文本消息
-	MsgBody     string  `MsgBody:"string"`     //消息
+	MsgBody     string `MsgBody:"string"`     //消息
 }
 
 type PushMsgStru struct {
-	 Id string `id:"string"`
-	 Msg string `id:"string"`
-	 IsPush string `id:"string"`
-	 UserId string `userId:"string"`
-	 CreateTime string `createTime:"string"`
-
+	Id         string `id:"string"`
+	Msg        string `id:"string"`
+	IsPush     string `id:"string"`
+	UserId     string `userId:"string"`
+	CreateTime string `createTime:"string"`
 }
+
 /**
 	将接收到的消息转化为结构体类型
 	@author:wanghongli
@@ -59,4 +60,20 @@ func Jsonencode(i interface{}) (jsonMsg string, err error) {
 	}
 	return string(j), nil
 
+}
+
+/**
+将结构体转换成map
+@author:wanghongli
+@since:2018/09/29
+*/
+func Struct2Map(obj interface{}) map[string]interface{} {
+	t := reflect.TypeOf(obj)
+	v := reflect.ValueOf(obj)
+	var data = make(map[string]interface{})
+
+	for i := 0; i < t.NumField(); i++ {
+		data[t.Field(i).Name] = v.Field(i).Interface()
+	}
+	return data
 }

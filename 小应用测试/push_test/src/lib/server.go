@@ -53,7 +53,8 @@ func Server() {
 		fmt.Println("the listen is error ", err)
 		return
 	}
-
+	//开启http服务
+	go WebServer()
 	//接收多个用户
 	for {
 		conn, err := listen.Accept()
