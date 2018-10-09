@@ -1,14 +1,38 @@
 package lib
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 	"os"
+	"strings"
 )
+
 func CheckRoomCliError(err error) {
 	if err != nil {
 		fmt.Printf("error : %s", err.Error())
 		os.Exit(1) //0代表成功 非零代表失败
+	}
+}
+
+func MessageSend(conn net.Conn) {
+	var input string
+	for {
+		reader := bufio.NewReader(os.Stdin)
+		data, _, _ := reader.ReadLine()
+		input = string(data)
+
+		if strings.ToUpper(input) == "EXIT" {
+			conn.Close()
+			break
+		}
+
+		_, err := conn.Write([]byte(input))
+		if err != nil {
+			conn.Close()
+			fmt.Printf("client connect err = %s", err)
+			break
+		}
 	}
 }
 func ChatRoomClient() {
@@ -16,6 +40,14 @@ func ChatRoomClient() {
 	CheckRoomCliError(err)
 	defer conn.Close()
 
-	conn.Write([]byte("hello world"))
-	fmt.Println("has send the message!")
+	go MessageSend(conn)
+
+	buf := make([]byte, 1024)
+
+	for {
+		length, err := conn.Read(buf)
+		CheckRoomCliError(err)
+		fmt.Println("receive server message content:", string(buf[:length]))
+	}
+	fmt.Println("client end !")
 }
