@@ -1,0 +1,14 @@
+base:
+  debug: true
+  maxProcess: 1
+  clusterName: gmPush
+  nodeName: gmPush-1
+
+webSocket:
+- localhost:8080
+
+bucketOptions:
+  num: 256
+  channelNum: 1024
+
+
